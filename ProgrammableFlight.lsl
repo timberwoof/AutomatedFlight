@@ -230,15 +230,19 @@ flyAndRotateToNextPosition() {
             return;
         }
         gFrameDetaPos = getWaypointPos(gFrame) - isPos;
+        //targetEuler.z = targetEuler.z + PI;
+        //isEuler.z = isEuler.z + PI;
         gFrameDeltaEuler = targetEuler - isEuler;
 
+        sayDebug("initial targetEuler:"+(string)targetEuler.z+" - isEuler:"+(string)isEuler.z+" => deltaEuler:"+(string)gFrameDeltaEuler.z);
         // fix rotation direction
         if (gFrameDeltaEuler.z > PI) {
-            gFrameDeltaEuler.z = TWO_PI - gFrameDeltaEuler.z;
+            gFrameDeltaEuler.z = gFrameDeltaEuler.z - TWO_PI;
+            sayDebug("fix > Pi targetEuler:"+(string)targetEuler.z+" - isEuler:"+(string)isEuler.z+" => deltaEuler:"+(string)gFrameDeltaEuler.z);
         } else if (gFrameDeltaEuler.z < -PI) {
             gFrameDeltaEuler.z = TWO_PI + gFrameDeltaEuler.z;
-        } 
-        sayDebug("targetEuler:"+(string)targetEuler.z+" - isEuler:"+(string)isEuler.z+" => deltaEuler:"+(string)gFrameDeltaEuler.z);
+            sayDebug("Fix < -PI targetEuler:"+(string)targetEuler.z+" - isEuler:"+(string)isEuler.z+" => deltaEuler:"+(string)gFrameDeltaEuler.z);
+        }
 
         vectorThrusters(gFrameDetaPos, gFrameDeltaEuler, frameDuration);
         gStepDetaPos = gFrameDetaPos / gSteps;
@@ -624,8 +628,8 @@ state StateFlying
     
     touch_start(integer total_number)
     {
-        if (llSameGroup(llDetectedKey(0)))
-        {
+        //if (llSameGroup(llDetectedKey(0)))
+        //{
             string message = "Select Flight Command";
             list buttons = ["Stop","1%","2%","5%","10%","20%","50%","100%","Report"];
             gMenuChannel = -(integer)llFrand(8999)+1000;
@@ -633,11 +637,11 @@ state StateFlying
             gMenuListen = llListen(gMenuChannel, "", avatarKey, "" );
             llDialog(avatarKey, message, buttons, gMenuChannel);
             llSetTimerEvent(30);
-        }
-        else
-        {
+        //}
+        //else
+        //{
             llSay(0,"((Sorry, you must have your Black Gazza Guard group tag active tio use this shuttle.))");
-        }    
+        //}    
     } // end touch_start
         
     listen(integer CHANNEL, string name, key id, string msg)
